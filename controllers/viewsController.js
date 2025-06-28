@@ -48,10 +48,8 @@ exports.getAccount = (req, res) => {
   res.status(200).render("account", { title: `your account` });
 };
 
-// we here render myBookings in the user's profile
+//  render myBookings in the user's profile
 exports.getMyTours = catchAsync(async (req, res) => {
-  // we can use virtual populate and call it a day... but he likes to ... you know
-
   //1) Find all bookings
   const bookings = await Booking.find({ user: req.user.id });
 

@@ -1,4 +1,4 @@
-const path = require("path"); // is used to manupulate path names
+const path = require("path");
 const express = require("express");
 
 const app = express();
@@ -30,41 +30,25 @@ app.set("views", path.join(__dirname, `views`));
 // Serving static files
 app.use(express.static(path.join(__dirname, `public`)));
 
-//global middleware function for setting Security HTTP headers
-// app.use(
-//   helmet.contentSecurityPolicy({
-//     directives: {
-//       defaultSrc: ["'self'"],
-//       scriptSrc: ["'self'", "https://js.stripe.com"],
-//       frameSrc: ["'self'", "https://js.stripe.com"], // needed for embedded Stripe checkout
-//       connectSrc: ["'self'", "https://api.stripe.com"],
-//       objectSrc: ["'none'"],
-//     },
-//   })
-// );
-
-// app.use(helmet());
-
 //Devolopment logging
 if (process.env.NODE_ENV === "development") {
   app.use(morgan("dev"));
 }
 
-//global middleware function for ratelimiter => is to count the number of requests coming from one IP and then there's too many request block these requests
 const limiter = createRateLimiter({
   max: 100,
-  windowMs: 60 * 60 * 1000, // 1 hour
+  windowMs: 60 * 60 * 1000,
   message: "Too Many requests From this Ip , Please Try Again in an Hour",
 });
 
 const loginLimiter = createRateLimiter({
   max: 6,
-  windowMs: 15 * 60 * 1000, // 15 mins
+  windowMs: 15 * 60 * 1000,
   message: "Too Many  attempts for Login ,Please Try Again in an 15 MINS ",
 });
 
 app.use("/api/v1/users/login", loginLimiter);
-app.use("/api", limiter); // gonna effect all the route that starts with /api
+app.use("/api", limiter);
 
 //Body parser , reading data from body into req.body
 app.use(express.json({ limit: "10kb" })); // we limit the amount of data that comes in the req.body
@@ -78,8 +62,7 @@ app.use(mongoSanitize());
 //Data Sanitization against XXS
 app.use(xss());
 
-// Pervent Parameter Pollution => try to have two of the same params like 2 sorts in the getAllTours route
-//we here gonna remove all the duplicate fields and gonna user the last field that the user inputs
+// Pervent Parameter Pollution
 app.use(
   hpp({
     whitelist: [
@@ -93,13 +76,6 @@ app.use(
     ],
   })
 );
-
-// Test middleware
-app.use((req, res, next) => {
-  req.requestTime = new Date().toISOString();
-  // console.log(req.cookies);
-  next();
-});
 
 //View Rout
 app.use("/", viewRouter);

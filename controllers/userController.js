@@ -1,6 +1,4 @@
 const { StatusCodes } = require("http-status-codes");
-//multer is a middleware to handle multi-part form data that's used to upload  files from a form
-// we gonna allow the user to upload a photo on the updateMe route
 const multer = require("multer");
 const sharp = require("sharp");
 const User = require("../models/userModel");
@@ -8,23 +6,8 @@ const catchAsync = require("../utils/catchAsync");
 const AppError = require("../utils/appError");
 const factory = require("./handlerFactory");
 
-// mean we want to store the image in the disk
-// the destination have access to the req object and the file that we uploaded , cb-> a callback function like next in express
-// the filename , what will the image that the user uploads gonna be called
-// const multerStorage = multer.diskStorage({
-//   destination: (req, file, cb) => {
-//     //null means we want no errors to be displayed
-//     cb(null, "public/img/users");
-//   },
-//   filename: (req, file, cb) => {
-//     //user-user'sId-theCurrentTimeStamp.theFileExtension
-//     const extension = file.mimetype.split("/")[1];
-//     cb(null, `user-${req.user.id}-${Date.now()}.${extension}`);
-//   },
-// });
-
 //Returns a StorageEngine implementation configured to store files in memory as Buffer objects.
-const multerStorage = multer.memoryStorage(); //we did that bcs when we want to resize the images instead of save the image in the disk and read that image to resize it we can do all that in the memory to save time
+const multerStorage = multer.memoryStorage();
 
 //Function to control which files are accepted and to test if the uploaded file is an image
 const multerFilter = (req, file, cb) => {
@@ -48,7 +31,6 @@ const upload = multer({
 });
 //we gonna use is upload as a middleware function in the updateMe endpoint
 
-//single-> bcs we want to upload one single image,and the name of the field of the form that's going to be uploading the image(the name of the field that's going to hold that image)
 exports.uploadUserPhoto = upload.single("photo");
 
 //this middleware gonna run after the image uploading , upload the image-> resize it to our needs -> update the user's info
@@ -86,14 +68,11 @@ exports.updateUser = factory.updateOne(User);
 exports.deletUser = factory.deletOne(User);
 
 exports.getMe = (req, res, next) => {
-  req.params.id = req.user.id; // it's a protected route so we gonna user our getOne in the handlerFactory to get the user's data so we putting the req.params.id= req.user.id so we put the id in the req.params withour putting in the URL
+  req.params.id = req.user.id;
   next();
 };
 
 exports.updateMe = catchAsync(async (req, res) => {
-  // console.log(req.file); //the multer middleware put the image that we uploaded(in postman) in the req object
-  // console.log(req.body);
-
   // 1) Create Error if User POsts password data
   if (req.body.password || req.body.passwordConfirm) {
     throw new AppError(
@@ -122,7 +101,6 @@ exports.updateMe = catchAsync(async (req, res) => {
   });
 });
 
-// when the user decides to delete his account we dont delete his document from the DB but we just set the account to inactive
 exports.deleteMe = catchAsync(async (req, res) => {
   await User.findByIdAndUpdate(req.user.id, { active: false });
 

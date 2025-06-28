@@ -47,9 +47,8 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: [true, "Please confirm your Password "],
     validate: {
-      // this only work on .save() .create() !!
       validator: function (el) {
-        return el === this.password; // the (el) is the current element (passwordConfirm)
+        return el === this.password;
       },
       message: `Passwords are not the same`,
     },
@@ -58,7 +57,6 @@ const userSchema = new mongoose.Schema({
   passwordResetToken: String,
   passwordResetExpires: Date,
   active: {
-    // if the user delete his account
     type: Boolean,
     default: true,
     select: false,
@@ -129,7 +127,6 @@ userSchema.methods.createPasswordResetToken = function () {
   return resetToken;
 };
 
-// this function it's gonna run right before a new doc is saved and we gonna specify a property in for the resetPassword
 userSchema.pre("save", async function (next) {
   if (!this.isModified("password") || this.isNew) {
     return next();
@@ -139,7 +136,7 @@ userSchema.pre("save", async function (next) {
   next();
 });
 
-//not showing any  inactive user in any find query for the deleteMe handler (user can delete his account)
+//not showing any  inactive user in any find query for the deleteMe endpoint
 userSchema.pre(/^find/, function (next) {
   this.find({ active: { $ne: false } });
 

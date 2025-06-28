@@ -77,7 +77,6 @@ exports.getOne = (Model, popOptions) =>
 
 exports.getAll = (Model) =>
   catchAsync(async (req, res) => {
-    //to allow for nested GET reviews on tour (hack)
     let filter = {};
     if (req.params.tourid) filter = { tour: req.params.tourid };
     if (req.params.userid) filter = { user: req.params.userid };

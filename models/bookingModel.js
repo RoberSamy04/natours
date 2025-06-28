@@ -30,7 +30,7 @@ bookingSchema.pre(/^find/, function (next) {
   this.populate("user").populate({
     path: "tour",
     select: "name",
-  }); // only guides and admins can check the bookings
+  });
   next();
 });
 

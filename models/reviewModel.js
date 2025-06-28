@@ -44,7 +44,7 @@ reviewSchema.pre(/^find/, function (next) {
   next();
 });
 
-//we gonna use this method as a middleware every time a new review is created
+// middleware every time a new review is created
 reviewSchema.statics.calcAverageRatings = async function (tourId) {
   const stats = await this.aggregate([
     {

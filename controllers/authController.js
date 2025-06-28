@@ -27,7 +27,6 @@ const createSendToken = (user, StatusCode, res) => {
 
   res.cookie("jwt", token, cookieOPtions);
 
-  //remove the password from the output
   user.password = undefined;
 
   res.status(StatusCode).json({
@@ -123,7 +122,7 @@ exports.login = catchAsync(async (req, res) => {
   }
 
   //2) check if user exists && password is correct
-  const user = await User.findOne({ email }).select("+password"); // we need to explicitly select the password like this bcs we setted the password select to flase in the schema to hide it and now if you want to select a field that is NOT select=false we used ("+") before the field
+  const user = await User.findOne({ email }).select("+password");
 
   if (!user || !(await user.correctPassword(password, user.password))) {
     throw new AppError("Incorrect Email or Password", StatusCodes.UNAUTHORIZED);
@@ -149,7 +148,6 @@ exports.logout = (req, res) => {
   res.status(StatusCodes.OK).json({ status: "success" });
 };
 
-//this middleware gonna run before any route handler to make sure the user is authenticated
 exports.protect = catchAsync(async (req, res, next) => {
   //1) Getting token and check of it's there
   let token;
@@ -173,7 +171,7 @@ exports.protect = catchAsync(async (req, res, next) => {
   }
 
   //2) Verification token
-  const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET); // the promosify make it returns a promise , this gonna return the Decoded Payload -> {id: ,iat: , exp:}
+  const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
 
   //3) Check if user still exists
   const freshUser = await User.findById(decoded.id);
@@ -198,7 +196,7 @@ exports.protect = catchAsync(async (req, res, next) => {
   next();
 });
 
-//this middleware is really only for rendered pages to check if the user logged in or not to render some (buttons/user's profile..etc)
+//this middleware is really only for rendered pages to check if the user logged in or not to render some (buttons , user's profile..etc)
 exports.isLoggedIn = async (req, res, next) => {
   try {
     if (req.cookies.jwt) {
@@ -265,12 +263,6 @@ exports.forgotPassword = catchAsync(async (req, res) => {
 
   try {
     const resetURL = `${req.protocol}://${req.get("host")}/api/v1/users/resetPassword/${resetToken}`;
-    //const message = `Forgot your password ? Submit a PATCH request with your new password and passwordConfirm to ${resetURL}.\n If you didnt forget your password please ignore this email!`;
-    // await sendEmail({
-    //   email,
-    //   subject: "your Password reset token (valid for 10 mins)",
-    //   message,
-    // });
 
     await new Email(user, resetURL).sendPasswordReset();
 
