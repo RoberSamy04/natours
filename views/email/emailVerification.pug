@@ -1,0 +1,29 @@
+extends baseEmail
+
+block content
+  h1 Verify your email address
+
+  p Hi #{firstName},
+  p Thanks for signing up! To complete your registration, please verify your email address.
+
+  if otp
+    p Your verification code is:
+    h2(style="font-size: 32px; color: #55c57a; text-align: center; margin: 20px 0;") #{otp}
+    p This code will expire in 10 minutes.
+
+  if verificationUrl
+    table.btn.btn-primary(role='presentation', border='0', cellpadding='0', cellspacing='0')
+      tbody
+        tr
+          td(align='left')
+            table(role='presentation', border='0', cellpadding='0', cellspacing='0')
+              tbody
+                tr
+                  td
+                    a(href=verificationUrl, target='_blank') Verify Email
+
+    p If the button doesn't work, copy and paste the link below into your browser:
+    p
+      a(href=verificationUrl)= verificationUrl
+
+  p If you didn’t create an account, you can ignore this email.

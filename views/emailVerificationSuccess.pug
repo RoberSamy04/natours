@@ -1,0 +1,17 @@
+extends base
+
+block content
+  main.main
+    form.form.form--verifyEmail
+    .form__group
+      label.form__label(for='email') Email Address
+      input#email.form__input(type='email', placeholder='you@example.com', required)
+
+    .form__group
+      label.form__label(for='otp') Verification Code (OTP)
+      input#otp.form__input(type='text', placeholder='Enter 6-digit code', required)
+
+    .form__group
+      button#submitBtn.btn.btn--green(type="submit") Verify Email
+
+       
