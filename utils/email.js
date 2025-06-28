@@ -1,7 +1,6 @@
 const nodemailer = require("nodemailer");
 const pug = require("pug");
-//when ever we want to send a new email is to import this email class then use it like this->
-// new Email(user->email,name / url->like the reset password and more).sendWelcome()<- whenever a new user signsup(example)
+
 module.exports = class Email {
   constructor(user, url) {
     this.to = user.email;
@@ -10,7 +9,6 @@ module.exports = class Email {
     this.from = `${process.env.USERNAME} <${process.env.EMAIL_FROM}>`;
   }
 
-  //when we in production we want to send real emails / but if not we still want to use our Mailtrap application
   newTransport() {
     if (process.env.NODE_ENV === "production") {
       return nodemailer.createTransport({
@@ -18,9 +16,6 @@ module.exports = class Email {
         auth: {
           user: process.env.GMAIL_EMAIL,
           pass: process.env.GMAIL_PASSWORD,
-        },
-        tls: {
-          rejectUnauthorized: false,
         },
       });
     }

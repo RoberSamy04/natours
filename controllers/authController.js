@@ -20,7 +20,6 @@ const createSendToken = (user, StatusCode, res) => {
     expires: new Date(
       Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000
     ),
-    // secure : true,
     httpOnly: true, //this' gonna make the cookie cannot be accessed in any way but the browser (xss attacks)
   };
   if (process.env.NODE_ENV === "production") cookieOPtions.secure = true;
